@@ -4,7 +4,7 @@ import httpx
 import os
 from bs4 import BeautifulSoup
 
-
+api = None
 # read the Steam API key from a file, if there is no file, the key will be None
 try:
     with open('key.txt', 'r') as f:
