@@ -39,26 +39,35 @@ def main():
     modnames = []
 
     for workshop_id in workshop_ids_list:
-        for method in [get_description_via_api, get_description_via_html]:
-            try:
-                description = method(api, modnames, workshop_id)
-                modname = find_modname(description)
-                if modname:
-                    modnames.append(modname)
-                    break
-                else:
-                    print(f"Failed to find modname for modid {workshop_id} via API\nmake sure the mod ")
-                    raise(KeyError)
-            except:
-                description = get_description_via_html(workshop_id)
-                modname = find_modname(description)
-                if modname:
-                    modnames.append(modname)
-                    break
-                else:
-                    print(f"Failed to find modname for modid {workshop_id} via HTML\nmake sure the mod description contains 'Mod ID: <modname>'")
-                    raise(KeyError)
+        try:
+            description = get_description_via_api(api, modnames, workshop_id)
+            modname = find_modname(description)
+            if modname:
+                modnames.append(modname)
+                continue
+            else:    
+                raise(KeyError)
+        except:
+            print(f"Failed to find modname for modid {workshop_id} via API\n trying via HTML")
 
+            description = get_description_via_html(workshop_id)
+            modname = find_modname(description)
+            if modname:
+                modnames.append(modname)
+                continue
+            else:
+                print(f"Failed to find modname for modid {workshop_id} via HTML\nmake sure the mod description contains 'Mod ID: <modname>'")
+                raise(KeyError)
+            
+    len_workshop_ids = len(workshop_ids_list)
+    len_modnames = len(modnames)
+    print(f"Found {len_modnames} modnames out of {len_workshop_ids} workshop ids")
+    if len(workshop_ids_list) != len(modnames):
+        print("Failed to get modnames for some mods")
+        return False
+    else:
+        print("All modnames found")
+    
     print("\n\n")
     print(';'.join(modnames))
 
